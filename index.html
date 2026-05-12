@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Gallery | Ranudeliar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #080808;
+            --surface: #111111;
+            --surface2: #181818;
+            --border: rgba(255,255,255,0.07);
+            --accent: #c6ff57;
+            --accent-dim: rgba(198,255,87,0.12);
+            --text: #f0f0f0;
+            --muted: #666;
+            --radius: 16px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'DM Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.5;
+        }
+
+        /* ── HEADER ── */
+        header {
+            width: 100%;
+            max-width: 960px;
+            padding: 36px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-tag {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            color: var(--accent);
+            text-transform: uppercase;
+            background: var(--accent-dim);
+            border: 1px solid rgba(198,255,87,0.25);
+            padding: 4px 12px;
+            border-radius: 100px;
+            margin-bottom: 8px;
+        }
+
+        header h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2rem, 7vw, 3.6rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1;
+            text-align: center;
+            background: linear-gradient(135deg, #fff 0%, #999 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-sub {
+            font-size: 0.7rem;
+            color: var(--muted);
+            letter-spacing: 0.1em;
+            margin-top: 4px;
+        }
+
+        .socials {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .social-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: 100px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            font-size: 0.72rem;
+            color: var(--muted);
+            text-decoration: none;
+            transition: all 0.2s;
+            letter-spacing: 0.03em;
+        }
+
+        .social-pill:hover {
+            border-color: rgba(198,255,87,0.4);
+            color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        .social-pill svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+        .divider {
+            width: 100%;
+            max-width: 960px;
+            height: 1px;
+            background: var(--border);
+            margin: 20px 0 16px;
+        }
+
+        /* ── TOTAL BADGE ── */
+        .total-badge {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 6px 16px 6px 8px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .badge-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent-dim);
+            border: 1px solid rgba(198,255,87,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: var(--accent);
+        }
+
+        .badge-icon svg { width: 11px; height: 11px; }
+
+        .badge-text {
+            font-size: 0.7rem;
+            color: var(--muted);
+            letter-spacing: 0.04em;
+        }
+
+        .badge-text strong {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin-right: 4px;
+        }
+
+        /* ── GENDER FILTER ── */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 0 16px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .filter-label {
+            font-size: 0.6rem;
+            letter-spacing: 0.15em;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-right: 4px;
+        }
+
+        .filter-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 14px;
+            border-radius: 100px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--muted);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            border-color: rgba(198,255,87,0.4);
+            color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        .filter-btn.active {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+            font-weight: 700;
+        }
+
+        .filter-btn .fi { font-style: normal; }
+
+        /* tag badge on card */
+        .gender-tag {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.55rem;
+            letter-spacing: 0.1em;
+            padding: 3px 8px;
+            border-radius: 100px;
+            font-weight: 700;
+            text-transform: uppercase;
+            z-index: 2;
+            backdrop-filter: blur(6px);
+        }
+
+        .gender-tag.wanita  { background: rgba(255,105,180,0.85); color: #fff; }
+        .gender-tag.pria    { background: rgba(56,150,255,0.85);  color: #fff; }
+        .gender-tag.couple  { background: rgba(198,255,87,0.9);   color: #000; }
+        .gender-tag.random  { background: rgba(255,255,255,0.12); color: #ccc; border: 1px solid rgba(255,255,255,0.2); }
+
+        /* ── GALLERY ── */
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            width: 100%;
+            max-width: 960px;
+            padding: 0 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (min-width: 640px) { .gallery-container { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 900px) { .gallery-container { grid-template-columns: repeat(4, 1fr); } }
+
+        /* ── CARD ── */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px) scale(1.01);
+            border-color: rgba(198,255,87,0.3);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(198,255,87,0.1);
+        }
+
+        .card:active { transform: scale(0.97); }
+
+        .card-image-wrap {
+            position: relative;
+            aspect-ratio: 3/4;
+            overflow: hidden;
+            background: var(--surface2);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        .card:hover .card-image { transform: scale(1.05); }
+
+        .card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 55%);
+            opacity: 0;
+            transition: opacity 0.2s;
+            display: flex;
+            align-items: flex-end;
+            padding: 12px;
+        }
+
+        .card:hover .card-overlay { opacity: 1; }
+
+        .overlay-label {
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            color: var(--accent);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .overlay-label svg { width: 11px; height: 11px; }
+
+        .card-content { padding: 11px 12px 13px; }
+
+        .view-prompt-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 9px;
+            font-size: 0.68rem;
+            color: var(--accent);
+            letter-spacing: 0.06em;
+            font-weight: 600;
+            border: 1px solid rgba(198,255,87,0.3);
+            border-radius: 8px;
+            padding: 5px 10px;
+            background: var(--accent-dim);
+            transition: all 0.2s;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .view-prompt-btn svg { width: 11px; height: 11px; flex-shrink: 0; }
+
+        .card:hover .view-prompt-btn {
+            border-color: rgba(198,255,87,0.7);
+            background: rgba(198,255,87,0.18);
+        }
+
+        .card-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ── PAGINATION ── */
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 32px 0 12px;
+            z-index: 1;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 0 16px;
+        }
+
+        .page-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--muted);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.72rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-btn:hover { border-color: rgba(198,255,87,0.4); color: var(--accent); background: var(--accent-dim); }
+        .page-btn.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+        .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        footer {
+            margin: 24px 0 36px;
+            font-size: 0.62rem;
+            color: var(--muted);
+            letter-spacing: 0.08em;
+            text-align: center;
+            z-index: 1;
+        }
+
+        footer span { color: var(--accent); }
+
+        /* ── LOADING ── */
+        #loading {
+            grid-column: 1/-1;
+            text-align: center;
+            color: var(--muted);
+            padding: 60px 20px;
+            font-size: 0.8rem;
+            letter-spacing: 0.08em;
+        }
+
+        .dot-loader { display: inline-flex; gap: 5px; margin-top: 12px; }
+        .dot-loader span { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); animation: blink 1.2s infinite; }
+        .dot-loader span:nth-child(2) { animation-delay: 0.2s; }
+        .dot-loader span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes blink { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
+
+        /* ── MODAL ── */
+        .modal-bg {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.82);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .modal-bg.open { display: flex; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+        .modal {
+            background: var(--surface);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 520px;
+            overflow: hidden;
+            animation: slideUp 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 40px 100px rgba(0,0,0,0.7);
+        }
+
+        @keyframes slideUp { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
+
+        .modal-image-wrap { position: relative; aspect-ratio: 16/9; overflow: hidden; background: var(--surface2); }
+        .modal-image { width: 100%; height: 100%; object-fit: cover; }
+
+        .modal-close {
+            position: absolute;
+            top: 12px; right: 12px;
+            width: 32px; height: 32px;
+            border-radius: 100px;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            z-index: 5;
+        }
+
+        .modal-close:hover { background: rgba(255,0,0,0.4); }
+
+        .modal-body { padding: 20px; }
+
+        .modal-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+
+        .prompt-label {
+            font-size: 0.62rem;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .prompt-box {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 0.78rem;
+            line-height: 1.7;
+            color: #aaa;
+            max-height: 160px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin-bottom: 14px;
+            scrollbar-width: thin;
+            scrollbar-color: #333 transparent;
+        }
+
+        .copy-btn {
+            width: 100%;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 13px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .copy-btn:hover { background: #d4ff6e; transform: scale(1.01); }
+        .copy-btn:active { transform: scale(0.98); }
+        .copy-btn.copied { background: #22c55e; color: #fff; }
+        .copy-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-tag">prompt by ranu</div>
+        <h1>PROMPT GALLERY</h1>
+        <p class="header-sub">AI Image Generation · Curated by Ranudeliar</p>
+        <div class="socials">
+            <a class="social-pill" href="https://tiktok.com/@el.prompt" target="_blank">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.16 8.16 0 004.77 1.52V6.76a4.85 4.85 0 01-1-.07z"/></svg>
+                @el.prompt
+            </a>
+            <a class="social-pill" href="https://instagram.com/ranudeliar" target="_blank">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                @ranudeliar
+            </a>
+        </div>
+    </header>
+
+    <div class="divider"></div>
+
+    <div class="total-badge" id="total-badge">
+        <div class="badge-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        </div>
+        <div class="badge-text">
+            <strong id="total-count">0</strong>prompt tersedia
+        </div>
+    </div>
+
+    <div class="filter-bar" id="filter-bar" style="display:none;">
+        <span class="filter-label">Filter:</span>
+        <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">✦ Semua</button>
+        <button class="filter-btn" data-filter="wanita" onclick="setFilter('wanita')">👩 Wanita</button>
+        <button class="filter-btn" data-filter="pria" onclick="setFilter('pria')">👨 Pria</button>
+        <button class="filter-btn" data-filter="couple" onclick="setFilter('couple')">👫 Couple</button>
+        <button class="filter-btn" data-filter="random" onclick="setFilter('random')">🎲 Random</button>
+    </div>
+
+    <div class="gallery-container" id="gallery">
+        <div id="loading">
+            <div>Mengambil data...</div>
+            <div class="dot-loader"><span></span><span></span><span></span></div>
+        </div>
+    </div>
+
+    <div class="pagination" id="pagination"></div>
+
+    <footer>&copy; 2025 <span>Ranudeliar</span> · Prompt Gallery · All rights reserved</footer>
+
+    <!-- MODAL -->
+    <div class="modal-bg" id="modal" onclick="closeModal(event)">
+        <div class="modal">
+            <div class="modal-image-wrap">
+                <img id="modal-img" src="" alt="" class="modal-image">
+                <button class="modal-close" onclick="closeModalDirect()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-title" id="modal-title"></div>
+                <div class="prompt-label">Prompt Text</div>
+                <div class="prompt-box" id="modal-prompt"></div>
+                <button class="copy-btn" id="copy-btn" onclick="doCopy()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                    Copy Prompt
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiUrl = './api/prompts.js';
+        const ITEMS_PER_PAGE = 10;
+        let allData = [];
+        let filteredData = [];
+        let currentPage = 1;
+        let currentFilter = 'all';
+        let currentPromptText = '';
+
+        /* ── GENDER DETECTION ── */
+        function detectGender(promptText) {
+            if (!promptText) return 'random';
+            const txt = promptText.toLowerCase();
+
+            // Cek couple dulu (prioritas tertinggi)
+            const couplePatterns = [
+                /subject\s*:\s*a\s+man\s+and\s+a\s+wom[ae]n/,
+                /subject\s*:\s*a\s+wom[ae]n\s+and\s+a\s+man/,
+                /subject\s*:\s*couple/,
+                /subject\s*:\s*two\s+people/,
+                /subject\s*:\s*a\s+boy\s+and\s+a\s+girl/,
+                /subject\s*:\s*a\s+girl\s+and\s+a\s+boy/,
+            ];
+            for (const p of couplePatterns) { if (p.test(txt)) return 'couple'; }
+
+            // Cek wanita
+            const femalePatterns = [
+                /subject\s*:\s*a\s+wom[ae]n/,
+                /subject\s*:\s*a\s+girl/,
+                /subject\s*:\s*a\s+female/,
+                /subject\s*:\s*she\b/,
+                /subject\s*:\s*her\b/,
+            ];
+            for (const p of femalePatterns) { if (p.test(txt)) return 'wanita'; }
+
+            // Cek pria
+            const malePatterns = [
+                /subject\s*:\s*a\s+man/,
+                /subject\s*:\s*a\s+boy/,
+                /subject\s*:\s*a\s+male/,
+                /subject\s*:\s*a\s+guy/,
+                /subject\s*:\s*he\b/,
+                /subject\s*:\s*him\b/,
+            ];
+            for (const p of malePatterns) { if (p.test(txt)) return 'pria'; }
+
+            return 'random';
+        }
+
+        const genderLabel = { wanita: '👩 Wanita', pria: '👨 Pria', couple: '👫 Couple', random: '🎲' };
+
+        fetch(apiUrl)
+            .then(r => r.json())
+            .then(data => {
+                // Tambahkan info gender ke setiap item
+                allData = data.map(item => ({
+                    ...item,
+                    gender: detectGender(item.promptText)
+                }));
+                filteredData = allData;
+                document.getElementById('total-count').textContent = data.length;
+                document.getElementById('total-badge').style.display = 'flex';
+                document.getElementById('filter-bar').style.display = 'flex';
+                const lastPage = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
+                renderPage(lastPage);
+            })
+            .catch(() => {
+                document.getElementById('loading').innerHTML = '⚠ Gagal memuat data.<br><small>Cek koneksi atau izin Apps Script.</small>';
+            });
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            // Update tombol aktif
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filter);
+            });
+            // Filter data
+            filteredData = filter === 'all' ? allData : allData.filter(item => item.gender === filter);
+            // Update count badge
+            document.getElementById('total-count').textContent = filteredData.length;
+            const lastPage = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
+            renderPage(lastPage || 1);
+        }
+
+        function renderPage(page) {
+            currentPage = page;
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = '';
+
+            if (filteredData.length === 0) {
+                gallery.innerHTML = `<div id="loading" style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted);font-size:0.8rem;letter-spacing:0.08em;">Tidak ada prompt untuk kategori ini.</div>`;
+                renderPagination();
+                return;
+            }
+
+            const start = (page - 1) * ITEMS_PER_PAGE;
+            const pageData = filteredData.slice(start, start + ITEMS_PER_PAGE);
+
+            pageData.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                const tagClass = item.gender || 'random';
+                const tagText = genderLabel[tagClass] || '🎲';
+                card.innerHTML = `
+                    <div class="card-image-wrap">
+                        <span class="gender-tag ${tagClass}">${tagText}</span>
+                        <img src="${item.imageUrl.replace('?dl=0','?raw=1')}" alt="${item.title}" class="card-image" loading="lazy">
+                        <div class="card-overlay">
+                            <div class="overlay-label">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                Lihat Prompt
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">${item.title}</div>
+                        <div class="view-prompt-btn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            View Prompt
+                        </div>
+                    </div>
+                `;
+                card.onclick = () => openModal(item);
+                gallery.appendChild(card);
+            });
+
+            renderPagination();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderPagination() {
+            const total = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
+            const pg = document.getElementById('pagination');
+            pg.innerHTML = '';
+            if (total <= 1) return;
+
+            const makeBtn = (label, page, isActive) => {
+                const btn = document.createElement('button');
+                btn.className = 'page-btn' + (isActive ? ' active' : '');
+                btn.innerHTML = label;
+                btn.disabled = page < 1 || page > total;
+                btn.onclick = () => renderPage(page);
+                return btn;
+            };
+
+            pg.appendChild(makeBtn('›', currentPage + 1, false));
+            for (let i = total; i >= 1; i--) {
+                if (total > 7 && Math.abs(i - currentPage) > 2 && i !== 1 && i !== total) {
+                    if (i === total - 1 || i === 2) {
+                        const dots = document.createElement('span');
+                        dots.textContent = '···';
+                        dots.style.cssText = 'color:#444;font-size:0.8rem;padding:0 4px;line-height:32px;';
+                        pg.appendChild(dots);
+                    }
+                    continue;
+                }
+                pg.appendChild(makeBtn(i, i, i === currentPage));
+            }
+            pg.appendChild(makeBtn('‹', currentPage - 1, false));
+        }
+
+        function openModal(item) {
+            document.getElementById('modal-img').src = item.imageUrl.replace('?dl=0','?raw=1');
+            document.getElementById('modal-title').textContent = item.title;
+            document.getElementById('modal-prompt').textContent = item.promptText;
+            currentPromptText = item.promptText;
+            const btn = document.getElementById('copy-btn');
+            btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy Prompt`;
+            btn.classList.remove('copied');
+            document.getElementById('modal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(e) {
+            if (e.target === document.getElementById('modal')) closeModalDirect();
+        }
+
+        function closeModalDirect() {
+            document.getElementById('modal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function doCopy() {
+            navigator.clipboard.writeText(currentPromptText).then(() => {
+                const btn = document.getElementById('copy-btn');
+                btn.innerHTML = '✅ Tersalin!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy Prompt`;
+                    btn.classList.remove('copied');
+                }, 2500);
+            });
+        }
+
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalDirect(); });
+    </script>
+</body>
+</html>
